@@ -1,0 +1,11 @@
+<h2>残高</h2>
+<h3>アドレス</h3>
+<div *ngIf="address$ | async as address">
+  <div>{{address}}</div>
+</div>
+<h3>XEM残高</h3>
+<div *ngIf="nativeTokenDisplayQuantity$ | async as nativeTokenDisplayQuantity">
+  <div *ngIf="nativeTokenName$ | async as nativeTokenName">
+    <div>{{nativeTokenDisplayQuantity}} [{{nativeTokenName}}]</div>
+  </div>
+</div>

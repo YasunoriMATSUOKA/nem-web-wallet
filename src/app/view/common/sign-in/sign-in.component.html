@@ -1,0 +1,23 @@
+<div *ngIf="isSignInComponentVisible">
+  <h2>認証</h2>
+  <div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="12px">
+    <div fxLayout="row" fxFlex>
+      <mat-form-field appearance="standard" fxFlex>
+        <mat-label>アドレス</mat-label>
+        <input #address matInput placeholder="NEMアドレスを入力してください">
+        <mat-hint>Nから始まるA-Z0-9のみ, ハイフン有無どちらでも可</mat-hint>
+        <mat-error></mat-error>
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxFlex>
+      <mat-form-field appearance="standard" fxFlex>
+        <mat-label>秘密鍵</mat-label>
+        <input #privateKey matInput placeholder="秘密鍵を入力してください" type="password">
+        <mat-hint>a-f0-9のみ, ハイフン無</mat-hint>
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="12px">
+      <button mat-flat-button color="primary" (click)="onSignIn(address.value, privateKey.value)">サインイン</button>
+    </div>
+  </div>
+</div>
