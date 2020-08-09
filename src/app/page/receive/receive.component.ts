@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
+import { Invoice } from 'src/app/domain/invoices/invoice.model';
 
 @Component({
   selector: 'app-receive',
@@ -15,6 +16,7 @@ export class ReceiveComponent implements OnInit {
   publicWallet: PublicWallet;
   publicWallet$: Observable<PublicWallet>;
   address$: Observable<string>;
+  invoice: Invoice;
 
   constructor(private walletService: WalletService) {
     this.publicWallet = this.walletService.getPublicWallet();
@@ -45,6 +47,10 @@ export class ReceiveComponent implements OnInit {
     this.walletService.setWallet$(this.walletService.undefinedWallet);
     this.isSignInComponentVisible = true;
     this.subscribeAllState$();
+  }
+
+  createInvoice(invoice: Invoice): void {
+    this.invoice = invoice;
   }
 
   subscribeAllState$(): void {

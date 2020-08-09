@@ -1,5 +1,4 @@
 <view-header (appSignOut)="signOut()"></view-header>
 <view-sign-in [isSignInComponentVisible]="isSignInComponentVisible" (appSignIn)="signIn($event)"></view-sign-in>
-<p>receive works!</p>
-<view-receive></view-receive>
+<view-receive [address$]="address$" (appCreateInvoice)="createInvoice($event)"></view-receive>
 <view-footer></view-footer>
