@@ -4,8 +4,6 @@ import { Observable, of } from 'rxjs';
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
-import { undefinedPublicWallet } from 'src/app/domain/wallets/undefined-public-wallet';
-import { undefinedWallet } from 'src/app/domain/wallets/undefined-wallet';
 import { Token } from 'src/app/domain/tokens/token.model';
 import { TokenService } from 'src/app/domain/tokens/token.service';
 
@@ -28,7 +26,6 @@ export class HomeComponent implements OnInit {
     this.publicWallet = this.walletService.getPublicWallet();
     this.isSignInComponentVisible =
       this.publicWallet.address === '' ? true : false;
-    this.subscribeAllState$();
   }
 
   ngOnInit(): void {
@@ -48,10 +45,10 @@ export class HomeComponent implements OnInit {
   }
 
   signOut(): void {
-    this.publicWallet = undefinedPublicWallet;
-    this.publicWallet$ = of(undefinedPublicWallet);
-    this.walletService.setWallet(undefinedWallet);
-    this.walletService.setWallet$(undefinedWallet);
+    this.publicWallet = this.walletService.undefinedPublicWallet;
+    this.publicWallet$ = of(this.walletService.undefinedPublicWallet);
+    this.walletService.setWallet(this.walletService.undefinedWallet);
+    this.walletService.setWallet$(this.walletService.undefinedWallet);
     this.isSignInComponentVisible = true;
     this.subscribeAllState$();
   }
@@ -70,7 +67,6 @@ export class HomeComponent implements OnInit {
     this.nativeToken$ = this.tokenService.getNativeToken$(
       this.walletService.getPublicWallet$()
     );
-    if (!this.nativeToken$) return;
     this.nativeToken$.subscribe();
   }
 }

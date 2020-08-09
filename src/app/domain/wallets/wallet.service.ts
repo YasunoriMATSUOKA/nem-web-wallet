@@ -6,6 +6,7 @@ import { Wallet } from './wallet.model';
 import { WalletInfrastructureService } from './wallet.infrastructure.service';
 import { PublicWallet } from './public-wallet.model';
 import { undefinedPublicWallet } from './undefined-public-wallet';
+import { undefinedWallet } from './undefined-wallet';
 
 export interface WalletServiceInterface {
   isValidAddress(rawAddressString: string): boolean;
@@ -34,6 +35,8 @@ export class WalletService {
 
   publicWallet: PublicWallet;
   publicWallet$: Observable<PublicWallet>;
+  undefinedWallet: Wallet = undefinedWallet;
+  undefinedPublicWallet: PublicWallet = undefinedPublicWallet;
 
   constructor(
     private walletInfrastructureService: WalletInfrastructureService

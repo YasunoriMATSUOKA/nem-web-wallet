@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'view-header',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./header.component.css'],
 })
 export class ViewHeaderComponent implements OnInit {
+  @Output() appSignOut: EventEmitter<never>;
+
   headerTitle: string = 'NEM Web Wallet';
   menues = [
     {
@@ -40,7 +42,13 @@ export class ViewHeaderComponent implements OnInit {
     },
   ];
 
-  constructor() {}
+  constructor() {
+    this.appSignOut = new EventEmitter<never>();
+  }
 
   ngOnInit(): void {}
+
+  onSignOut(): void {
+    this.appSignOut.emit();
+  }
 }
