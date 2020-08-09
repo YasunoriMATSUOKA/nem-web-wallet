@@ -53,6 +53,6 @@ export class SettingsComponent implements OnInit {
 
   subscribeAddress$(): void {
     this.address$ = this.walletService.getAddress$();
-    this.address$.subscribe((x) => console.log(x));
+    this.address$.subscribe();
   }
 }
