@@ -12,6 +12,11 @@ import { Address, Account } from 'nem-library';
 export class WalletService {
   wallet: Wallet | undefined;
   wallet$: Observable<Wallet | undefined>;
+  undefinedWallet: Wallet = {
+    privateKey: undefined,
+    publicKey: undefined,
+    address: undefined,
+  };
 
   constructor() {}
 
