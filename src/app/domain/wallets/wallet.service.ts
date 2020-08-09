@@ -2,12 +2,28 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Address, Account } from 'nem-library';
-
 import { Wallet } from './wallet.model';
+import { WalletInfrastructureService } from './wallet.infrastructure.service';
 import { PublicWallet } from './public-wallet.model';
-import { undefinedWallet } from './undefined-wallet';
 import { undefinedPublicWallet } from './undefined-public-wallet';
+
+export interface WalletServiceInterface {
+  isValidAddress(rawAddressString: string): boolean;
+  isValidPublicKey(rawPublicKeyString: string): boolean;
+  isValidPrivateKey(rawPrivateKeyString: string): boolean;
+  isMatchedAddressAndPrivateKey(
+    rawAddressString: string,
+    rawPrivateKeyString: string
+  ): boolean;
+  isMatchedAddressAndPublicKey(
+    rawAddressString: string,
+    rawPublicKeyString: string
+  ): boolean;
+  validatedWalletFromAddressAndPrivateKey(
+    rawAddressString: string,
+    rawPrivateKeyString: string
+  ): Wallet;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +35,9 @@ export class WalletService {
   publicWallet: PublicWallet;
   publicWallet$: Observable<PublicWallet>;
 
-  constructor() {}
+  constructor(
+    private walletInfrastructureService: WalletInfrastructureService
+  ) {}
 
   getPublicWallet(): PublicWallet {
     return this.publicWallet ? this.publicWallet : undefinedPublicWallet;
@@ -31,13 +49,10 @@ export class WalletService {
 
   convertWalletToPublicWallet(wallet: Wallet): PublicWallet {
     const isValidWallet = this.isValidWallet(wallet);
-    const account = isValidWallet
-      ? Account.createWithPrivateKey(wallet.address)
-      : undefined;
     return isValidWallet
       ? {
-          publicKey: account.publicKey,
-          address: account.address.plain(),
+          publicKey: wallet.publicKey,
+          address: wallet.address,
         }
       : undefinedPublicWallet;
   }
@@ -73,62 +88,39 @@ export class WalletService {
   }
 
   isValidAddress(rawAddressString: string): boolean {
-    try {
-      const address = new Address(rawAddressString);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return this.walletInfrastructureService.isValidAddress(rawAddressString);
   }
 
   isValidPublicKey(rawPublicKeyString: string): boolean {
-    try {
-      const account = Account.createWithPublicKey(rawPublicKeyString);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return this.walletInfrastructureService.isValidPublicKey(
+      rawPublicKeyString
+    );
   }
 
   isValidPrivateKey(rawPrivateKeyString: string): boolean {
-    try {
-      const account = Account.createWithPrivateKey(rawPrivateKeyString);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return this.walletInfrastructureService.isValidPrivateKey(
+      rawPrivateKeyString
+    );
   }
 
   isMatchedAddressAndPrivateKey(
     rawAddressString: string,
     rawPrivateKeyString: string
   ): boolean {
-    if (
-      this.isValidAddress(rawAddressString) &&
-      this.isValidPrivateKey(rawPrivateKeyString)
-    ) {
-      const address = new Address(rawAddressString);
-      const account = Account.createWithPrivateKey(rawPrivateKeyString);
-      return address.plain() === account.address.plain();
-    } else {
-      return false;
-    }
+    return this.walletInfrastructureService.isMatchedAddressAndPrivateKey(
+      rawAddressString,
+      rawPrivateKeyString
+    );
   }
 
   isMatchedAddressAndPublicKey(
     rawAddressString: string,
     rawPublicKeyString: string
   ): boolean {
-    if (
-      this.isValidAddress(rawAddressString) &&
-      this.isValidPublicKey(rawPublicKeyString)
-    ) {
-      const address = new Address(rawAddressString);
-      const publicAccount = Account.createWithPublicKey(rawPublicKeyString);
-      return address.plain() === publicAccount.address.plain();
-    } else {
-      return false;
-    }
+    return this.walletInfrastructureService.isMatchedAddressAndPublicKey(
+      rawAddressString,
+      rawPublicKeyString
+    );
   }
 
   isValidWallet(wallet: Wallet): boolean {
@@ -164,19 +156,9 @@ export class WalletService {
     rawAddressString: string,
     rawPrivateKeyString: string
   ): Wallet {
-    const validatedAccount = this.isMatchedAddressAndPrivateKey(
+    return this.walletInfrastructureService.validatedWalletFromAddressAndPrivateKey(
       rawAddressString,
       rawPrivateKeyString
-    )
-      ? Account.createWithPrivateKey(rawPrivateKeyString)
-      : undefined;
-    const validatedWallet = validatedAccount
-      ? {
-          privateKey: validatedAccount.privateKey,
-          publicKey: validatedAccount.publicKey,
-          address: validatedAccount.address.plain(),
-        }
-      : undefinedWallet;
-    return validatedWallet;
+    );
   }
 }
