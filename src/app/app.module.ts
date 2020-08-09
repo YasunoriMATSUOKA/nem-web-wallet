@@ -15,6 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { NEMLibrary, NetworkTypes } from 'nem-library';
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET);
 
+import { NgxKjuaModule } from 'ngx-kjua';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './page/home/home.component';
@@ -57,6 +59,7 @@ import { ViewFooterComponent } from './view/common/footer/footer.component';
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
+    NgxKjuaModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
