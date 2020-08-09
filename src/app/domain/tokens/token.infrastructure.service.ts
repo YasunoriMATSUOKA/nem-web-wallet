@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
+import { ServerConfig, Address, AccountHttp } from 'nem-library';
+
 import { Token } from './token.model';
 import { TokenServiceInterface } from './token.service';
 import { PublicWallet } from '../wallets/public-wallet.model';
-import { undefinedPublicWallet } from '../wallets/undefined-public-wallet';
 import { restNodes } from '../nodes/rest-nodes';
-
-import { ServerConfig, Address, AccountHttp } from 'nem-library';
 
 @Injectable({
   providedIn: 'root',
