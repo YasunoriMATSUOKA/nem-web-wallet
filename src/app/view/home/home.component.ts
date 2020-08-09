@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { Token } from '../../domain/tokens/token.model';
+
 @Component({
   selector: 'view-home',
   templateUrl: './home.component.html',
@@ -8,8 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class ViewHomeComponent implements OnInit {
   @Input() address$: Observable<string>;
-  @Input() nativeTokenDisplayQuantity$: Observable<number>;
-  @Input() nativeTokenName$: Observable<string>;
+  @Input() nativeToken$: Observable<Token>;
 
   constructor() {}
 
@@ -17,11 +18,8 @@ export class ViewHomeComponent implements OnInit {
 
   ngOnChanges(): void {
     this.address$.subscribe();
-    if (this.nativeTokenDisplayQuantity$) {
-      this.nativeTokenDisplayQuantity$.subscribe();
-    }
-    if (this.nativeTokenName$) {
-      this.nativeTokenName$.subscribe();
+    if (this.nativeToken$) {
+      this.nativeToken$.subscribe();
     }
   }
 }

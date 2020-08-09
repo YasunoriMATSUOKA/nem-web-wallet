@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
@@ -19,8 +18,6 @@ export class HomeComponent implements OnInit {
   wallet$: Observable<Wallet | undefined>;
   address$: Observable<string>;
   nativeToken$: Observable<Token>;
-  nativeTokenDisplayQuantity$: Observable<number>;
-  nativeTokenName$: Observable<string>;
 
   constructor(
     private walletService: WalletService,
@@ -32,26 +29,18 @@ export class HomeComponent implements OnInit {
     } else {
       this.isSignInComponentVisible = true;
     }
-    this.setAllState$();
+    this.subscribeAllState$();
   }
 
   ngOnInit(): void {
-    this.setAllState$();
-    if (!this.wallet$) {
-      return;
-    }
-    this.wallet$.subscribe((wallet: Wallet): void => {
-      this.isSignInComponentVisible = wallet.address ? false : true;
-    });
+    this.subscribeAllState$();
+    if (!this.wallet$) return;
+    this.wallet$.subscribe();
   }
 
   ngDoChecked(): void {
-    if (!this.wallet$) {
-      return;
-    }
-    this.wallet$.subscribe((wallet: Wallet): void => {
-      this.isSignInComponentVisible = wallet.address ? false : true;
-    });
+    if (!this.wallet$) return;
+    this.wallet$.subscribe();
   }
 
   signIn(wallet: Wallet) {
@@ -60,7 +49,7 @@ export class HomeComponent implements OnInit {
     this.walletService.setWallet(wallet);
     this.walletService.setWallet$(wallet);
     this.isSignInComponentVisible = false;
-    this.setAllState$();
+    this.subscribeAllState$();
   }
 
   signOut(): void {
@@ -69,83 +58,34 @@ export class HomeComponent implements OnInit {
     this.walletService.setWallet(undefined);
     this.walletService.setWallet$(undefined);
     this.isSignInComponentVisible = true;
-    this.setAllState$();
+    this.subscribeAllState$();
   }
 
-  setAllState$(): void {
-    this.setAddress$();
-    this.setNativeToken$();
-    this.setNativeTokenDisplayQuantity$();
-    this.setNativeTokenName$();
+  subscribeAllState$(): void {
+    this.subscribeAddress$();
+    this.subscribeNativeToken$();
   }
 
-  getWallet$(): Observable<Wallet | undefined> {
-    return this.walletService.wallet$;
+  setWallet(): void {
+    this.wallet = this.walletService.wallet;
   }
 
-  setWallet$(): void {
-    this.wallet$ = this.getWallet$();
-    this.wallet$.subscribe((wallet) => {});
+  subscribeWallet$(): void {
+    this.wallet$ = this.walletService.wallet$;
+    if (!this.wallet$) return;
+    this.wallet$.subscribe();
   }
 
-  getAddress$(): Observable<string> {
-    return this.walletService.getAddress$();
+  subscribeAddress$(): void {
+    this.address$ = this.walletService.getAddress$();
+    this.address$.subscribe();
   }
 
-  setAddress$(): void {
-    this.address$ = this.getAddress$();
-    this.address$.subscribe((address) => {});
-  }
-
-  getNativeToken$(): Observable<Token> {
-    return this.tokenService.getNativeToken$(this.walletService.wallet$);
-  }
-
-  setNativeToken$(): void {
-    this.nativeToken$ = this.getNativeToken$();
-    if (!this.nativeToken$) {
-      return;
-    }
-    this.nativeToken$.subscribe((nativeToken) => {});
-  }
-
-  getNativeTokenDisplayQuantity$(): Observable<number> {
-    if (!this.nativeToken$) {
-      return of(0);
-    }
-    return this.nativeToken$.pipe(
-      map((nativeToken) => {
-        return nativeToken.displayQuantity;
-      })
+  subscribeNativeToken$(): void {
+    this.nativeToken$ = this.tokenService.getNativeToken$(
+      this.walletService.wallet$
     );
-  }
-
-  setNativeTokenDisplayQuantity$(): void {
-    this.nativeTokenDisplayQuantity$ = this.getNativeTokenDisplayQuantity$();
-    if (!this.nativeTokenDisplayQuantity$) {
-      return;
-    }
-    this.nativeTokenDisplayQuantity$.subscribe(
-      (nativeTokenDisplayQuantity) => {}
-    );
-  }
-
-  getNativeTokenName$(): Observable<string> {
-    if (!this.nativeToken$) {
-      return of('XEM');
-    }
-    return this.nativeToken$.pipe(
-      map((nativeToken) => {
-        return nativeToken.name;
-      })
-    );
-  }
-
-  setNativeTokenName$(): void {
-    this.nativeTokenName$ = this.getNativeTokenName$();
-    if (!this.nativeTokenName$) {
-      return;
-    }
-    this.nativeTokenName$.subscribe((nativeTokenName) => {});
+    if (!this.nativeToken$) return;
+    this.nativeToken$.subscribe();
   }
 }
