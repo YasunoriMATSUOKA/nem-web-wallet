@@ -4,7 +4,8 @@ import { map, mergeMap } from 'rxjs/operators';
 
 import { Token } from './token.model';
 import { TokenServiceInterface } from './token.service';
-import { Wallet } from '../wallets/wallet.model';
+import { PublicWallet } from '../wallets/public-wallet.model';
+import { undefinedPublicWallet } from '../wallets/undefined-public-wallet';
 import { restNodes } from '../nodes/rest-nodes';
 
 import { ServerConfig, Address, AccountHttp } from 'nem-library';
@@ -23,12 +24,12 @@ export class TokenInfrastructureService implements TokenServiceInterface {
     };
   });
 
-  getNativeToken$(wallet$: Observable<Wallet | undefined>): Observable<Token> {
+  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token> {
     const accountHttp = new AccountHttp(this.serverConfigs);
-    const address$ = wallet$
-      ? wallet$.pipe(
-          map((wallet: Wallet) => {
-            return wallet.address;
+    const address$ = publicWallet$
+      ? publicWallet$.pipe(
+          map((publicWallet: PublicWallet) => {
+            return publicWallet.address;
           })
         )
       : of('');

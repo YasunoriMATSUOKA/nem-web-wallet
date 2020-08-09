@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
+import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
+import { undefinedPublicWallet } from 'src/app/domain/wallets/undefined-public-wallet';
+import { undefinedWallet } from 'src/app/domain/wallets/undefined-wallet';
 import { Token } from 'src/app/domain/tokens/token.model';
 import { TokenService } from 'src/app/domain/tokens/token.service';
 
@@ -12,10 +15,9 @@ import { TokenService } from 'src/app/domain/tokens/token.service';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
-  title = 'nem-web-wallet';
   isSignInComponentVisible: boolean;
-  wallet: Wallet | undefined;
-  wallet$: Observable<Wallet | undefined>;
+  publicWallet: PublicWallet;
+  publicWallet$: Observable<PublicWallet>;
   address$: Observable<string>;
   nativeToken$: Observable<Token>;
 
@@ -23,29 +25,22 @@ export class HomeComponent implements OnInit {
     private walletService: WalletService,
     private tokenService: TokenService
   ) {
-    this.wallet = this.walletService.wallet;
-    if (this.wallet) {
-      this.isSignInComponentVisible = this.wallet.address ? false : true;
-    } else {
-      this.isSignInComponentVisible = true;
-    }
+    this.publicWallet = this.walletService.getPublicWallet();
+    this.isSignInComponentVisible =
+      this.publicWallet.address === '' ? true : false;
     this.subscribeAllState$();
   }
 
   ngOnInit(): void {
     this.subscribeAllState$();
-    if (!this.wallet$) return;
-    this.wallet$.subscribe();
-  }
-
-  ngDoChecked(): void {
-    if (!this.wallet$) return;
-    this.wallet$.subscribe();
   }
 
   signIn(wallet: Wallet) {
-    this.wallet = wallet;
-    this.wallet$ = of(wallet);
+    if (!this.walletService.isValidWallet(wallet)) {
+      console.error('Invalid wallet!');
+    }
+    this.publicWallet = wallet;
+    this.publicWallet$ = of(wallet);
     this.walletService.setWallet(wallet);
     this.walletService.setWallet$(wallet);
     this.isSignInComponentVisible = false;
@@ -53,10 +48,10 @@ export class HomeComponent implements OnInit {
   }
 
   signOut(): void {
-    this.wallet = undefined;
-    this.wallet$ = of(undefined);
-    this.walletService.setWallet(undefined);
-    this.walletService.setWallet$(undefined);
+    this.publicWallet = undefinedPublicWallet;
+    this.publicWallet$ = of(undefinedPublicWallet);
+    this.walletService.setWallet(undefinedWallet);
+    this.walletService.setWallet$(undefinedWallet);
     this.isSignInComponentVisible = true;
     this.subscribeAllState$();
   }
@@ -66,16 +61,6 @@ export class HomeComponent implements OnInit {
     this.subscribeNativeToken$();
   }
 
-  setWallet(): void {
-    this.wallet = this.walletService.wallet;
-  }
-
-  subscribeWallet$(): void {
-    this.wallet$ = this.walletService.wallet$;
-    if (!this.wallet$) return;
-    this.wallet$.subscribe();
-  }
-
   subscribeAddress$(): void {
     this.address$ = this.walletService.getAddress$();
     this.address$.subscribe();
@@ -83,7 +68,7 @@ export class HomeComponent implements OnInit {
 
   subscribeNativeToken$(): void {
     this.nativeToken$ = this.tokenService.getNativeToken$(
-      this.walletService.wallet$
+      this.walletService.getPublicWallet$()
     );
     if (!this.nativeToken$) return;
     this.nativeToken$.subscribe();
