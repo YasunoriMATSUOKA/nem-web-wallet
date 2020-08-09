@@ -3,10 +3,10 @@ import { Observable } from 'rxjs';
 
 import { Token } from './token.model';
 import { TokenInfrastructureService } from './token.infrastructure.service';
-import { Wallet } from '../wallets/wallet.model';
+import { PublicWallet } from '../wallets/public-wallet.model';
 
 export interface TokenServiceInterface {
-  getNativeToken$(wallet$: Observable<Wallet | undefined>): Observable<Token>;
+  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token>;
 }
 
 @Injectable({
@@ -17,7 +17,7 @@ export class TokenService {
 
   constructor(private tokenInfrastructureService: TokenInfrastructureService) {}
 
-  getNativeToken$(wallet$: Observable<Wallet | undefined>): Observable<Token> {
-    return this.tokenInfrastructureService.getNativeToken$(wallet$);
+  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token> {
+    return this.tokenInfrastructureService.getNativeToken$(publicWallet$);
   }
 }
