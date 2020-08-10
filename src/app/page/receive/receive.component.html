@@ -1,4 +1,14 @@
 <view-header (appSignOut)="signOut()"></view-header>
-<view-sign-in [isSignInComponentVisible]="isSignInComponentVisible" (appSignIn)="signIn($event)"></view-sign-in>
-<p>receive works!</p>
+<view-sign-in
+  [isSignInComponentVisible]="isSignInComponentVisible"
+  (appSignIn)="signIn($event)"
+></view-sign-in>
+<view-receive
+  [invoiceFormDisabled]="invoiceFormDisabled"
+  [address$]="address$"
+  [showInvoiceQRCode]="showInvoiceQRCode"
+  [invoiceQRCodeString]="invoiceQRCodeString"
+  (appCreateInvoice)="createInvoice($event)"
+  (appCancelInvoice)="cancelInvoice()"
+></view-receive>
 <view-footer></view-footer>

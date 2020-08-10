@@ -15,32 +15,36 @@ import { MatCardModule } from '@angular/material/card';
 import { NEMLibrary, NetworkTypes } from 'nem-library';
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET);
 
+import { NgxKjuaModule } from 'ngx-kjua';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './page/home/home.component';
 import { ViewHomeComponent } from './view/home/home.component';
-import { ViewSignInComponent } from './view/common/sign-in/sign-in.component';
-import { ViewHeaderComponent } from './view/common/header/header.component';
-import { ViewFooterComponent } from './view/common/footer/footer.component';
 import { ReceiveComponent } from './page/receive/receive.component';
+import { ViewReceiveComponent } from './view/receive/receive.component';
 import { SendComponent } from './page/send/send.component';
 import { HistoryComponent } from './page/history/history.component';
 import { AboutComponent } from './page/about/about.component';
 import { SettingsComponent } from './page/settings/settings.component';
+import { ViewSignInComponent } from './view/common/sign-in/sign-in.component';
+import { ViewHeaderComponent } from './view/common/header/header.component';
+import { ViewFooterComponent } from './view/common/footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     ViewHomeComponent,
-    ViewSignInComponent,
-    ViewHeaderComponent,
-    ViewFooterComponent,
     ReceiveComponent,
+    ViewReceiveComponent,
     SendComponent,
     HistoryComponent,
     AboutComponent,
     SettingsComponent,
+    ViewSignInComponent,
+    ViewHeaderComponent,
+    ViewFooterComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +59,7 @@ import { SettingsComponent } from './page/settings/settings.component';
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
+    NgxKjuaModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
