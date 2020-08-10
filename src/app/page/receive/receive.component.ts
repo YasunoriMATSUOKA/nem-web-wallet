@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
 import { Invoice } from 'src/app/domain/invoices/invoice.model';
 import { InvoiceService } from 'src/app/domain/invoices/invoice.service';
+import { Tx } from 'src/app/domain/transactions/transaction.model';
+import { TxService } from 'src/app/domain/transactions/transaction.service';
 
 @Component({
   selector: 'app-receive',
@@ -21,10 +23,13 @@ export class ReceiveComponent implements OnInit {
   invoice: Invoice;
   showInvoiceQRCode: boolean;
   invoiceQRCodeString: string;
+  unconfirmedTx$: Observable<Tx>;
+  unconfirmedTxSubscription: Subscription;
 
   constructor(
     private walletService: WalletService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private txService: TxService
   ) {
     this.publicWallet = this.walletService.getPublicWallet();
     this.isSignInComponentVisible =
@@ -36,6 +41,10 @@ export class ReceiveComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscribeAllState$();
+  }
+
+  ngOnDestroy(): void {
+    this.unsucscribeAllState$();
   }
 
   signIn(wallet: Wallet) {
@@ -67,6 +76,7 @@ export class ReceiveComponent implements OnInit {
     this.invoiceQRCodeString = this.invoiceService.getInvoiceQRCodeString(
       invoice
     );
+    this.subscribeUnconfirmedTx$();
   }
 
   cancelInvoice(): void {
@@ -74,14 +84,39 @@ export class ReceiveComponent implements OnInit {
     this.invoice = this.invoiceService.undefinedInvoice;
     this.invoiceQRCodeString = this.invoiceService.undefinedInvoiceQRCodeString;
     this.invoiceFormDisabled = false;
+    this.unconfirmedTxSubscription.unsubscribe();
   }
 
   subscribeAllState$(): void {
     this.subscribeAddress$();
   }
 
+  unsucscribeAllState$(): void {
+    this.unconfirmedTxSubscription.unsubscribe();
+  }
+
   subscribeAddress$(): void {
     this.address$ = this.walletService.getAddress$();
     this.address$.subscribe();
+  }
+
+  subscribeUnconfirmedTx$(): void {
+    console.log(this.invoiceQRCodeString);
+    this.unconfirmedTxSubscription = this.txService
+      .unconfirmedTxListener$(JSON.parse(this.invoiceQRCodeString))
+      .subscribe(
+        this.showUnconfirmedTx,
+        (error) => {
+          console.log('unconfirmedTransaction$ error!');
+          console.error(error);
+        },
+        () => {
+          console.log('unconfirmedTransaction$ completed');
+        }
+      );
+  }
+
+  showUnconfirmedTx(tx: Tx): void {
+    console.log(tx);
   }
 }

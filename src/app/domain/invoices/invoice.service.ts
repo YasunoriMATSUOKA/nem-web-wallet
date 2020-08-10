@@ -55,14 +55,14 @@ export class InvoiceService {
   getInvoiceQRCodeJSON(invoice: Invoice): InvoiceQRCodeJSON {
     if (this.isValidInvoice(invoice)) {
       return {
+        v: 2,
+        type: 2,
         data: {
           addr: invoice.toAddress,
           amount: invoice.nativeTokenQuantity,
           msg: invoice.message,
           name: 'nem-web-wallet',
         },
-        type: 2,
-        v: 2,
       };
     } else {
       return undefinedInvoiceQRCodeJSON;
