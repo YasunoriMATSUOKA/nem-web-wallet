@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Tx } from './transaction.model';
-import { TxInfrastructureService } from './transaction.infrastructure.service';
+import { Tx } from './tx.model';
+import { TxInfrastructureService } from './tx.infrastructure.service';
 import { InvoiceQRCodeJSON } from '../invoices/invoice-qr-code-json.model';
 
 export interface TxServiceInterface {

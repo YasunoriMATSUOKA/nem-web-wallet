@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TxInfrastructureService } from './transaction.infrastructure.service';
+import { TxInfrastructureService } from './tx.infrastructure.service';
 
 describe('TxInfrastructureService', () => {
   let service: TxInfrastructureService;
