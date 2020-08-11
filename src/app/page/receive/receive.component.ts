@@ -92,6 +92,7 @@ export class ReceiveComponent implements OnInit {
   }
 
   unsucscribeAllState$(): void {
+    if (!this.unconfirmedTxSubscription) return;
     this.unconfirmedTxSubscription.unsubscribe();
   }
 

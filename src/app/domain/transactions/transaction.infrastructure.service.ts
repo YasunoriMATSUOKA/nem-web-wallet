@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap, filter, map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 
 import {
   Address,
   UnconfirmedTransactionListener,
   TransactionTypes,
   TransferTransaction,
-  BlockchainListener,
 } from 'nem-library';
 import { WebSocketConfig } from 'nem-library/dist/src/infrastructure/Listener';
 

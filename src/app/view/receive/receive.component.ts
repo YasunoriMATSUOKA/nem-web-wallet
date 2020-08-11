@@ -30,6 +30,7 @@ export class ViewReceiveComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.address$) return;
     this.address$.subscribe();
   }
 
