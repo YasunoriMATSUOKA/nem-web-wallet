@@ -11,7 +11,7 @@ import { WalletService } from 'src/app/domain/wallets/wallet.service';
   styleUrls: ['./receive.component.css'],
 })
 export class ViewReceiveComponent implements OnInit {
-  @Input() address$: Observable<string>;
+  @Input() address: string;
   @Input() invoiceFormDisabled: boolean;
   @Input() showInvoiceQRCode: boolean;
   @Input() invoiceQRCodeString: string;
@@ -29,10 +29,7 @@ export class ViewReceiveComponent implements OnInit {
     this.appCancelInvoice = new EventEmitter<never>();
   }
 
-  ngOnInit(): void {
-    if (!this.address$) return;
-    this.address$.subscribe();
-  }
+  ngOnInit(): void {}
 
   showErrorDialog(errorMessage): void {
     console.error(errorMessage);

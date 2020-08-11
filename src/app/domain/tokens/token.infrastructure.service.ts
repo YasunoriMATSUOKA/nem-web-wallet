@@ -7,13 +7,14 @@ import { ServerConfig, Address, AccountHttp } from 'nem-library';
 import { Token } from './token.model';
 import { TokenServiceInterface } from './token.service';
 import { PublicWallet } from '../wallets/public-wallet.model';
+import { WalletService } from '../wallets/wallet.service';
 import { restNodes } from '../nodes/rest-nodes';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TokenInfrastructureService implements TokenServiceInterface {
-  constructor() {}
+  constructor(private walletService: WalletService) {}
 
   serverConfigs: ServerConfig[] = restNodes.map((node) => {
     return {
@@ -23,50 +24,31 @@ export class TokenInfrastructureService implements TokenServiceInterface {
     };
   });
 
-  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token> {
+  getNativeToken$(publicWallet: PublicWallet): Observable<Token> {
     const accountHttp = new AccountHttp(this.serverConfigs);
-    const address$ = publicWallet$
-      ? publicWallet$.pipe(
-          map((publicWallet: PublicWallet) => {
-            return publicWallet.address;
-          })
-        )
-      : of('');
-    const nativeToken$ = address$
-      .pipe(
-        map((address: string) => {
-          const addressObject: Address | undefined =
-            address !== '' ? new Address(address) : undefined;
-          return addressObject;
-        })
-      )
-      .pipe(
-        mergeMap((addressObject) => {
-          if (!addressObject) {
-            const noToken: Token = {
-              name: 'XEM',
-              quantity: 0,
-              divisibility: 6,
-              displayQuantity: 0,
-              description: '',
-            };
-            return of(noToken);
-          }
-          return accountHttp.getFromAddress(addressObject).pipe(
-            map((accountInfoWithMetaData) => {
-              const token: Token = {
-                name: 'XEM',
-                quantity: accountInfoWithMetaData.balance.balance,
-                divisibility: 6,
-                displayQuantity:
-                  accountInfoWithMetaData.balance.balance / 1000000,
-                description: '',
-              };
-              return token;
-            })
-          );
-        })
-      );
+    if (!this.walletService.isValidPublicWallet(publicWallet)) {
+      const noToken: Token = {
+        name: 'XEM',
+        quantity: 0,
+        divisibility: 6,
+        displayQuantity: 0,
+        description: '',
+      };
+      return of(noToken);
+    }
+    const address = new Address(publicWallet.address);
+    const nativeToken$ = accountHttp.getFromAddress(address).pipe(
+      map((accountInfoWithMetaData) => {
+        const token: Token = {
+          name: 'XEM',
+          quantity: accountInfoWithMetaData.balance.balance,
+          divisibility: 6,
+          displayQuantity: accountInfoWithMetaData.balance.balance / 1000000,
+          description: '',
+        };
+        return token;
+      })
+    );
     return nativeToken$;
   }
 }
