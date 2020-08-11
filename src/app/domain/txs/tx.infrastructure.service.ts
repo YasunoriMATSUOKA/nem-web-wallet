@@ -10,10 +10,10 @@ import {
 } from 'nem-library';
 import { WebSocketConfig } from 'nem-library/dist/src/infrastructure/Listener';
 
-import { TxServiceInterface } from './transaction.service';
+import { TxServiceInterface } from './tx.service';
 import { webSocketNodes } from '../nodes/web-socket-nodes';
 import { InvoiceQRCodeJSON } from '../invoices/invoice-qr-code-json.model';
-import { Tx } from '../transactions/transaction.model';
+import { Tx } from './tx.model';
 import { Token } from '../tokens/token.model';
 
 new TransferTransaction();

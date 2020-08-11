@@ -6,8 +6,8 @@ import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
 import { WalletService } from 'src/app/domain/wallets/wallet.service';
 import { Invoice } from 'src/app/domain/invoices/invoice.model';
 import { InvoiceService } from 'src/app/domain/invoices/invoice.service';
-import { Tx } from 'src/app/domain/transactions/transaction.model';
-import { TxService } from 'src/app/domain/transactions/transaction.service';
+import { Tx } from 'src/app/domain/txs/tx.model';
+import { TxService } from 'src/app/domain/txs/tx.service';
 
 @Component({
   selector: 'app-receive',
