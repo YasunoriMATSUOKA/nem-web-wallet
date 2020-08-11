@@ -64,6 +64,7 @@ export class ReceiveComponent implements OnInit {
     this.address = '';
     this.walletService.setWallet(this.walletService.undefinedWallet);
     this.isSignInComponentVisible = true;
+    if (!this.showInvoiceQRCode) return;
     this.cancelInvoice();
   }
 
