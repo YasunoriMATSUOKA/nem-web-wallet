@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { PublicWallet } from '../../domain/wallets/public-wallet.model';
 import { Token } from '../../domain/tokens/token.model';
 
 @Component({
@@ -9,7 +10,7 @@ import { Token } from '../../domain/tokens/token.model';
   styleUrls: ['./home.component.css'],
 })
 export class ViewHomeComponent implements OnInit {
-  @Input() address$: Observable<string>;
+  @Input() publicWallet: PublicWallet;
   @Input() nativeToken$: Observable<Token>;
 
   constructor() {}
@@ -17,7 +18,6 @@ export class ViewHomeComponent implements OnInit {
   ngOnInit(): void {}
 
   ngOnChanges(): void {
-    this.address$.subscribe();
     if (this.nativeToken$) {
       this.nativeToken$.subscribe();
     }

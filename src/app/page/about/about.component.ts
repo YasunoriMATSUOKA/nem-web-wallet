@@ -13,6 +13,5 @@ export class AboutComponent implements OnInit {
 
   signOut(): void {
     this.walletService.setWallet(this.walletService.undefinedWallet);
-    this.walletService.setWallet$(this.walletService.undefinedWallet);
   }
 }

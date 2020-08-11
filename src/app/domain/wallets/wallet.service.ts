@@ -31,10 +31,8 @@ export interface WalletServiceInterface {
 })
 export class WalletService {
   private wallet: Wallet;
-  private wallet$: Observable<Wallet>;
 
   publicWallet: PublicWallet;
-  publicWallet$: Observable<PublicWallet>;
   undefinedWallet: Wallet = undefinedWallet;
   undefinedPublicWallet: PublicWallet = undefinedPublicWallet;
 
@@ -44,10 +42,6 @@ export class WalletService {
 
   getPublicWallet(): PublicWallet {
     return this.publicWallet ? this.publicWallet : undefinedPublicWallet;
-  }
-
-  getPublicWallet$(): Observable<PublicWallet> {
-    return this.publicWallet$ ? this.publicWallet$ : of(undefinedPublicWallet);
   }
 
   convertWalletToPublicWallet(wallet: Wallet): PublicWallet {
@@ -68,26 +62,8 @@ export class WalletService {
     };
   }
 
-  setWallet$(wallet: Wallet): void {
-    this.wallet$ = of(wallet);
-    this.publicWallet$ = of({
-      publicKey: wallet.publicKey,
-      address: wallet.address,
-    });
-  }
-
   getAddress(): string {
     return this.wallet.address;
-  }
-
-  getAddress$(): Observable<string> {
-    return this.wallet$
-      ? this.wallet$.pipe(
-          map((wallet) => {
-            return wallet.address;
-          })
-        )
-      : of('');
   }
 
   isValidAddress(rawAddressString: string): boolean {

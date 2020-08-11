@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
@@ -17,9 +17,8 @@ import { TxService } from 'src/app/domain/txs/tx.service';
 export class ReceiveComponent implements OnInit {
   isSignInComponentVisible: boolean;
   publicWallet: PublicWallet;
-  publicWallet$: Observable<PublicWallet>;
   invoiceFormDisabled: boolean;
-  address$: Observable<string>;
+  address: string;
   invoice: Invoice;
   showInvoiceQRCode: boolean;
   invoiceQRCodeString: string;
@@ -32,16 +31,18 @@ export class ReceiveComponent implements OnInit {
     private txService: TxService
   ) {
     this.publicWallet = this.walletService.getPublicWallet();
-    this.isSignInComponentVisible =
-      this.publicWallet.address === '' ? true : false;
+    this.address = this.publicWallet.address;
+    this.isSignInComponentVisible = this.walletService.isValidPublicWallet(
+      this.publicWallet
+    )
+      ? false
+      : true;
     this.invoiceFormDisabled = false;
     this.showInvoiceQRCode = false;
     this.invoiceQRCodeString = this.invoiceService.undefinedInvoiceQRCodeString;
   }
 
-  ngOnInit(): void {
-    this.subscribeAllState$();
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.unsucscribeAllState$();
@@ -50,22 +51,20 @@ export class ReceiveComponent implements OnInit {
   signIn(wallet: Wallet) {
     if (!this.walletService.isValidWallet(wallet)) {
       console.error('Invalid wallet!');
+      return;
     }
-    this.publicWallet = wallet;
-    this.publicWallet$ = of(wallet);
+    this.publicWallet = this.walletService.convertWalletToPublicWallet(wallet);
     this.walletService.setWallet(wallet);
-    this.walletService.setWallet$(wallet);
+    this.address = this.publicWallet.address;
     this.isSignInComponentVisible = false;
-    this.subscribeAllState$();
   }
 
   signOut(): void {
     this.publicWallet = this.walletService.undefinedPublicWallet;
-    this.publicWallet$ = of(this.walletService.undefinedPublicWallet);
+    this.address = '';
     this.walletService.setWallet(this.walletService.undefinedWallet);
-    this.walletService.setWallet$(this.walletService.undefinedWallet);
     this.isSignInComponentVisible = true;
-    this.subscribeAllState$();
+    if (!this.showInvoiceQRCode) return;
     this.cancelInvoice();
   }
 
@@ -87,20 +86,12 @@ export class ReceiveComponent implements OnInit {
     this.unconfirmedTxSubscription.unsubscribe();
   }
 
-  subscribeAllState$(): void {
-    this.subscribeAddress$();
-  }
-
   unsucscribeAllState$(): void {
     if (!this.unconfirmedTxSubscription) return;
     this.unconfirmedTxSubscription.unsubscribe();
   }
 
-  subscribeAddress$(): void {
-    this.address$ = this.walletService.getAddress$();
-    this.address$.subscribe();
-  }
-
+  // Todo: subscribeUnconfirmedTx$ doesn't work well.
   subscribeUnconfirmedTx$(): void {
     console.log(this.invoiceQRCodeString);
     this.unconfirmedTxSubscription = this.txService

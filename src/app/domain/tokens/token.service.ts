@@ -6,7 +6,7 @@ import { TokenInfrastructureService } from './token.infrastructure.service';
 import { PublicWallet } from '../wallets/public-wallet.model';
 
 export interface TokenServiceInterface {
-  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token>;
+  getNativeToken$(publicWallet: PublicWallet): Observable<Token>;
 }
 
 @Injectable({
@@ -17,7 +17,7 @@ export class TokenService {
 
   constructor(private tokenInfrastructureService: TokenInfrastructureService) {}
 
-  getNativeToken$(publicWallet$: Observable<PublicWallet>): Observable<Token> {
-    return this.tokenInfrastructureService.getNativeToken$(publicWallet$);
+  getNativeToken$(publicWallet: PublicWallet): Observable<Token> {
+    return this.tokenInfrastructureService.getNativeToken$(publicWallet);
   }
 }

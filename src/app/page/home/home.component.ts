@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Wallet } from 'src/app/domain/wallets/wallet.model';
 import { PublicWallet } from 'src/app/domain/wallets/public-wallet.model';
@@ -15,8 +15,6 @@ import { TokenService } from 'src/app/domain/tokens/token.service';
 export class HomeComponent implements OnInit {
   isSignInComponentVisible: boolean;
   publicWallet: PublicWallet;
-  publicWallet$: Observable<PublicWallet>;
-  address$: Observable<string>;
   nativeToken$: Observable<Token>;
 
   constructor(
@@ -24,48 +22,38 @@ export class HomeComponent implements OnInit {
     private tokenService: TokenService
   ) {
     this.publicWallet = this.walletService.getPublicWallet();
-    this.isSignInComponentVisible =
-      this.publicWallet.address === '' ? true : false;
+    this.isSignInComponentVisible = this.walletService.isValidPublicWallet(
+      this.publicWallet
+    )
+      ? false
+      : true;
   }
 
   ngOnInit(): void {
-    this.subscribeAllState$();
+    this.subscribeNativeToken$();
   }
 
   signIn(wallet: Wallet) {
     if (!this.walletService.isValidWallet(wallet)) {
       console.error('Invalid wallet!');
+      return;
     }
-    this.publicWallet = wallet;
-    this.publicWallet$ = of(wallet);
+    this.publicWallet = this.walletService.convertWalletToPublicWallet(wallet);
     this.walletService.setWallet(wallet);
-    this.walletService.setWallet$(wallet);
     this.isSignInComponentVisible = false;
-    this.subscribeAllState$();
+    this.subscribeNativeToken$();
   }
 
   signOut(): void {
     this.publicWallet = this.walletService.undefinedPublicWallet;
-    this.publicWallet$ = of(this.walletService.undefinedPublicWallet);
     this.walletService.setWallet(this.walletService.undefinedWallet);
-    this.walletService.setWallet$(this.walletService.undefinedWallet);
     this.isSignInComponentVisible = true;
-    this.subscribeAllState$();
-  }
-
-  subscribeAllState$(): void {
-    this.subscribeAddress$();
     this.subscribeNativeToken$();
-  }
-
-  subscribeAddress$(): void {
-    this.address$ = this.walletService.getAddress$();
-    this.address$.subscribe();
   }
 
   subscribeNativeToken$(): void {
     this.nativeToken$ = this.tokenService.getNativeToken$(
-      this.walletService.getPublicWallet$()
+      this.walletService.getPublicWallet()
     );
     this.nativeToken$.subscribe();
   }
