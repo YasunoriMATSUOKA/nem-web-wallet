@@ -24,6 +24,7 @@ import { ViewHomeComponent } from './view/home/home.component';
 import { ReceiveComponent } from './page/receive/receive.component';
 import { ViewReceiveComponent } from './view/receive/receive.component';
 import { SendComponent } from './page/send/send.component';
+import { ViewSendComponent } from './view/send/send.component';
 import { HistoryComponent } from './page/history/history.component';
 import { AboutComponent } from './page/about/about.component';
 import { SettingsComponent } from './page/settings/settings.component';
@@ -39,6 +40,7 @@ import { ViewFooterComponent } from './view/common/footer/footer.component';
     ReceiveComponent,
     ViewReceiveComponent,
     SendComponent,
+    ViewSendComponent,
     HistoryComponent,
     AboutComponent,
     SettingsComponent,
