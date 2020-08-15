@@ -1,20 +1,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SendComponent } from './send.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
-describe('SendComponent', () => {
-  let component: SendComponent;
-  let fixture: ComponentFixture<SendComponent>;
+import { ViewSendComponent } from './send.component';
+
+describe('ViewSendComponent', () => {
+  let component: ViewSendComponent;
+  let fixture: ComponentFixture<ViewSendComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SendComponent ]
-    })
-    .compileComponents();
+      declarations: [ViewSendComponent],
+      imports: [MatDialogModule],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SendComponent);
+    fixture = TestBed.createComponent(ViewSendComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

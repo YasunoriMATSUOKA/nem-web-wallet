@@ -1,0 +1,16 @@
+<div>
+  <h2 mat-dialog-title>送付前最終確認</h2>
+  <mat-dialog-content>
+    <div>送信元アドレス:</div>
+    <div>{{data.fromAddress}}</div>
+    <div>送信先アドレス:</div>
+    <div>{{data.toAddress}}</div>
+    <div>送金額: {{data.displayQuantity}} XEM</div>
+    <div>メッセージ:</div>
+    <div>{{data.message}}</div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial (click)="onClickSendConfirm()">送信</button>
+    <button mat-flat-button [mat-dialog-close]="true" (click)="onClickSendCancel()">キャンセル</button>
+  </mat-dialog-actions>
+</div>

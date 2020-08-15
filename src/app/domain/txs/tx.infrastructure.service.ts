@@ -7,14 +7,23 @@ import {
   UnconfirmedTransactionListener,
   TransactionTypes,
   TransferTransaction,
+  ServerConfig,
+  TransactionHttp,
+  TimeWindow,
+  XEM,
+  EmptyMessage,
+  PlainMessage,
+  NemAnnounceResult,
 } from 'nem-library';
 import { WebSocketConfig } from 'nem-library/dist/src/infrastructure/Listener';
 
 import { TxServiceInterface } from './tx.service';
 import { webSocketNodes } from '../nodes/web-socket-nodes';
+import { restNodes } from '../nodes/rest-nodes';
 import { InvoiceQRCodeJSON } from '../invoices/invoice-qr-code-json.model';
 import { Tx } from './tx.model';
 import { Token } from '../tokens/token.model';
+import { WalletService } from '../wallets/wallet.service';
 
 new TransferTransaction();
 
@@ -29,17 +38,15 @@ export class TxInfrastructureService implements TxServiceInterface {
       port: node.port,
     };
   });
+  serverConfigs: ServerConfig[] = restNodes.map((node) => {
+    return {
+      protocol: node.protocol,
+      domain: node.domain,
+      port: node.port,
+    };
+  });
 
-  constructor() {}
-
-  convertTransactionTypeNumberToString(typeNumber: number): string {
-    switch (typeNumber) {
-      case TransactionTypes.TRANSFER:
-        return 'TRANSFER';
-      default:
-        return 'UNSUPPORTED TYPE';
-    }
-  }
+  constructor(private walletService: WalletService) {}
 
   convertQuantityToNativeToken(quantity: number): Token {
     return {
@@ -67,35 +74,44 @@ export class TxInfrastructureService implements TxServiceInterface {
       .pipe(
         map((unconfirmedTransaction) => {
           const tx: Tx = {
-            direction:
-              unconfirmedTransaction.signer.address.plain() ===
-              recipientAddress.plain()
-                ? 'both'
-                : 'in',
-            type: this.convertTransactionTypeNumberToString(
-              unconfirmedTransaction.type
-            ),
-            isConfirmed: unconfirmedTransaction.isConfirmed(),
-            isMultisig: false,
+            direction: 'in',
+            type: 'TRANSFER_WITHOUT_MESSAGE',
             fromAddress: unconfirmedTransaction.signer.address.plain(),
             toAddress: recipientAddress.plain(),
             nativeTokenQuantity: 0,
             otherTokens: undefined,
-            totalFee: this.convertQuantityToNativeToken(
-              unconfirmedTransaction.fee
-            ),
-            yourFee:
-              unconfirmedTransaction.signer.address.plain() ===
-              recipientAddress.plain()
-                ? this.convertQuantityToNativeToken(unconfirmedTransaction.fee)
-                : this.convertQuantityToNativeToken(0),
-            blockHeight: undefined,
-            id: '',
-            hash: '',
+            plainMessage: '',
+            unsignedTxData: undefined,
+            signedTxData: undefined,
           };
           return tx;
         })
       );
     return unconfirmedTx$;
+  }
+
+  convertToUnsignedTxFromToAddressDisplayQuantityMessage(
+    toAddress: string,
+    displayQuantity: number,
+    message: string
+  ): TransferTransaction | undefined {
+    if (!this.walletService.isValidAddress(toAddress)) return undefined;
+    if (displayQuantity < 0 || displayQuantity > 8999999999) return undefined;
+    const unsignedTransaction = TransferTransaction.create(
+      TimeWindow.createWithDeadline(),
+      new Address(toAddress),
+      new XEM(displayQuantity),
+      message ? PlainMessage.create(message) : EmptyMessage
+    );
+    return unsignedTransaction;
+  }
+
+  sendTx$(tx: Tx): Observable<NemAnnounceResult> {
+    const signedTransaction = tx.signedTxData;
+    const transactionHttp = new TransactionHttp(this.serverConfigs);
+    const sendTxResult$ = transactionHttp.announceTransaction(
+      signedTransaction
+    );
+    return sendTxResult$;
   }
 }

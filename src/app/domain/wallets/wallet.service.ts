@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+
+import { Account, TransferTransaction, SignedTransaction } from 'nem-library';
 
 import { Wallet } from './wallet.model';
 import { WalletInfrastructureService } from './wallet.infrastructure.service';
 import { PublicWallet } from './public-wallet.model';
 import { undefinedPublicWallet } from './undefined-public-wallet';
 import { undefinedWallet } from './undefined-wallet';
+import { Tx } from '../txs/tx.model';
 
 export interface WalletServiceInterface {
   isValidAddress(rawAddressString: string): boolean;
@@ -139,5 +140,11 @@ export class WalletService {
       rawAddressString,
       rawPrivateKeyString
     );
+  }
+
+  signTransaction(unsignedTransaction: TransferTransaction): SignedTransaction {
+    const account = Account.createWithPrivateKey(this.wallet.privateKey);
+    const signedTransaction = account.signTransaction(unsignedTransaction);
+    return signedTransaction;
   }
 }
