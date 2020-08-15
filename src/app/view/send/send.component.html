@@ -1,0 +1,43 @@
+<div fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="24px">
+  <mat-card>
+    <mat-card-title>送付フォーム</mat-card-title>
+    <mat-card-content>
+      <div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="12px">
+        <div fxLayout="row" fxFlex>
+          <mat-form-field appearance="standard" fxFlex>
+            <mat-label>支払先アドレス(必須)</mat-label>
+            <input matInput type="string" #toAddress class="address" #toAddress placeholder="支払先アドレスを入力してください"
+              required />
+            <mat-hint>Nから始まるA-Z0-9のみ, ハイフン有無どちらでも可</mat-hint>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxFlex>
+          <mat-form-field appearance="standard" fxFlex>
+            <mat-label>送付額(必須)</mat-label>
+            <input matInput type="number" #displayQuantity placeholder="送付額を入力してください" required />
+            <span matSuffix>XEM</span>
+            <mat-hint>0以上8999999999以下, 0.000001刻みで指定可</mat-hint>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxFlex>
+          <mat-form-field appearance="standard" fxFlex>
+            <mat-label>メッセージ(任意)</mat-label>
+            <textarea matInput type="string" #message placeholder="メッセージを入力してください"></textarea>
+            <mat-hint>トランザクションにメッセージを含めることが可能</mat-hint>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="12px">
+          <button mat-flat-button color="primary" (click)="
+              onClickSendButton(
+                toAddress.value,
+                displayQuantity.value,
+                message.value
+              )
+            " [disabled]="sendFormDisabled">
+            送付
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

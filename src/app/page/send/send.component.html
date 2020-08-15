@@ -1,4 +1,5 @@
 <view-header (appSignOut)="signOut()"></view-header>
 <view-sign-in [isSignInComponentVisible]="isSignInComponentVisible" (appSignIn)="signIn($event)"></view-sign-in>
-<p>send works!</p>
+<view-send [sendFormDisabled]="sendFormDisabled" [toAddress]="toAddress" [displayQuantity]="displayQuantity"
+  [message]="message" (appClickSendButton)="clickSendButton($event)"></view-send>
 <view-footer></view-footer>
