@@ -14,8 +14,6 @@ import { restNodes } from '../nodes/rest-nodes';
   providedIn: 'root',
 })
 export class TokenInfrastructureService implements TokenServiceInterface {
-  constructor(private walletService: WalletService) {}
-
   serverConfigs: ServerConfig[] = restNodes.map((node) => {
     return {
       protocol: node.protocol,
@@ -24,8 +22,9 @@ export class TokenInfrastructureService implements TokenServiceInterface {
     };
   });
 
+  constructor(private walletService: WalletService) {}
+
   getNativeToken$(publicWallet: PublicWallet): Observable<Token> {
-    const accountHttp = new AccountHttp(this.serverConfigs);
     if (!this.walletService.isValidPublicWallet(publicWallet)) {
       const noToken: Token = {
         name: 'XEM',
@@ -36,6 +35,7 @@ export class TokenInfrastructureService implements TokenServiceInterface {
       };
       return of(noToken);
     }
+    const accountHttp = new AccountHttp(this.serverConfigs);
     const address = new Address(publicWallet.address);
     const nativeToken$ = accountHttp.getFromAddress(address).pipe(
       map((accountInfoWithMetaData) => {

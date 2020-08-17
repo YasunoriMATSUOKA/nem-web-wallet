@@ -30,6 +30,7 @@ import { SendComponent } from './page/send/send.component';
 import { ViewSendComponent } from './view/send/send.component';
 import { ViewSendConfirmDialogComponent } from './view/send/send-confirm-dialog/send-confirm-dialog.component';
 import { HistoryComponent } from './page/history/history.component';
+import { ViewHistoryComponent } from './view/history/history.component';
 import { AboutComponent } from './page/about/about.component';
 import { SettingsComponent } from './page/settings/settings.component';
 import { ViewSignInComponent } from './view/common/sign-in/sign-in.component';
@@ -47,6 +48,7 @@ import { ViewFooterComponent } from './view/common/footer/footer.component';
     ViewSendComponent,
     ViewSendConfirmDialogComponent,
     HistoryComponent,
+    ViewHistoryComponent,
     AboutComponent,
     SettingsComponent,
     ViewSignInComponent,

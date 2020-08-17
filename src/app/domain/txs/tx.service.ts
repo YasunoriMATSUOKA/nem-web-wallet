@@ -16,6 +16,7 @@ export interface TxServiceInterface {
     message: string
   ): TransferTransaction | undefined;
   sendTx$(tx: Tx): Observable<NemAnnounceResult>;
+  getTxsHistory$(): Observable<Tx[]>;
 }
 
 @Injectable({
@@ -111,5 +112,9 @@ export class TxService {
 
   sendTx$(tx: Tx): Observable<NemAnnounceResult> {
     return this.txInfrastructureService.sendTx$(tx);
+  }
+
+  getTxsHistory$(): Observable<Tx[]> {
+    return this.txInfrastructureService.getTxsHistory$();
   }
 }
