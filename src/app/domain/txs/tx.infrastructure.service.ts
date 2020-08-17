@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import {
@@ -14,6 +14,8 @@ import {
   EmptyMessage,
   PlainMessage,
   NemAnnounceResult,
+  AccountHttp,
+  Transaction,
 } from 'nem-library';
 import { WebSocketConfig } from 'nem-library/dist/src/infrastructure/Listener';
 
@@ -113,5 +115,106 @@ export class TxInfrastructureService implements TxServiceInterface {
       signedTransaction
     );
     return sendTxResult$;
+  }
+
+  getTxsHistory$(): Observable<Tx[]> {
+    return this.getAllTransactions$().pipe(
+      map((transactions: Transaction[]): Tx[] => {
+        return transactions.map(
+          (transaction): Tx => {
+            if (transaction instanceof TransferTransaction) {
+              return this.parseFromTransferTransactionToTx(transaction);
+            } else {
+              return {
+                direction: undefined,
+                type: undefined,
+                fromAddress: undefined,
+                toAddress: undefined,
+                nativeTokenQuantity: 0,
+                otherTokens: undefined,
+                plainMessage: undefined,
+                unsignedTxData: undefined,
+                signedTxData: undefined,
+              };
+            }
+          }
+        );
+      })
+    );
+  }
+
+  parseFromTransferTransactionToTx(
+    transferTransaction: TransferTransaction
+  ): Tx | undefined {
+    if (transferTransaction.type === TransactionTypes.TRANSFER) {
+      const fromAddress = transferTransaction.signer.address.plain();
+      const toAddress = transferTransaction.recipient.plain();
+      let direction;
+      if (
+        fromAddress === toAddress &&
+        fromAddress === this.walletService.getAddress()
+      ) {
+        direction = 'both';
+      } else if (fromAddress === this.walletService.getAddress()) {
+        direction = 'out';
+      } else if (toAddress === this.walletService.getAddress()) {
+        direction = 'in';
+      }
+      let type, plainMessage;
+      if (
+        transferTransaction.message.isPlain() &&
+        transferTransaction.message.payload === ''
+      ) {
+        type = 'TRANSFER_WITHOUT_MESSAGE';
+        plainMessage = '';
+      } else if (
+        transferTransaction.message.isPlain() &&
+        transferTransaction.message.payload !== '' &&
+        transferTransaction.message.isEncrypted()
+      ) {
+        type = 'TRANSFER_WITH_PLAIN_MESSAGE';
+        plainMessage = transferTransaction.message.payload;
+      } else {
+        type = undefined;
+        plainMessage = undefined;
+      }
+      const tx: Tx = {
+        direction: direction,
+        type: type,
+        fromAddress: fromAddress,
+        toAddress: toAddress,
+        nativeTokenQuantity: transferTransaction.xem().quantity,
+        otherTokens: undefined,
+        plainMessage: plainMessage,
+        unsignedTxData: transferTransaction,
+        signedTxData: undefined,
+      };
+      return tx;
+    } else {
+      return {
+        direction: undefined,
+        type: undefined,
+        fromAddress: undefined,
+        toAddress: undefined,
+        nativeTokenQuantity: 0,
+        otherTokens: undefined,
+        plainMessage: undefined,
+        unsignedTxData: undefined,
+        signedTxData: undefined,
+      };
+    }
+  }
+
+  getAllTransactions$(): Observable<Transaction[]> {
+    if (
+      !this.walletService.isValidPublicWallet(
+        this.walletService.getPublicWallet()
+      )
+    )
+      return of([]);
+    const address = new Address(this.walletService.getAddress());
+    const accountHttp = new AccountHttp(this.serverConfigs);
+    const allTransactions$ = accountHttp.allTransactions(address);
+    return allTransactions$;
   }
 }
