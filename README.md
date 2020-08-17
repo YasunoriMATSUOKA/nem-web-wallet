@@ -1,5 +1,7 @@
 # NemWebWallet
 
+This project is hosted at [https://nem-web-wallet.web.app](https://nem-web-wallet.web.app)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.4.
 
 ## Development server
